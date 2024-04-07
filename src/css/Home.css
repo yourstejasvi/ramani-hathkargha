@@ -1,0 +1,15 @@
+.scroll-container {
+    height: 100vh; /* Set the height to fill the viewport */
+    overflow-y: scroll; /* Enable vertical scrolling */
+  }
+  
+  /* Customize scrollbar appearance */
+.scroll-container::-webkit-scrollbar {
+    width: 0; /* Make scrollbar invisible in webkit browsers (Chrome, Safari, etc.) */
+  }
+  
+  /* For Firefox */
+.scroll-container {
+    scrollbar-width: none; /* Make scrollbar invisible */
+  }
+  
