@@ -13,7 +13,7 @@ const firebaseConfig = {
     appId: "1:388897906884:web:5ec3877601bb79bebba991",
     measurementId: "G-K9YG9ZVZ1Q",
     databaseURL: "https://ramani-c05b8-default-rtdb.firebaseio.com",
-    
+
   };
 
 
@@ -21,9 +21,9 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
-export const storageRef = ref(storage);
+export const storageRef = ref(storage, 'product-images');
 export const db = getFirestore(app);
-const analytics = getAnalytics(app); 
+const analytics = getAnalytics(app);
 const Googleprovider = new GoogleAuthProvider()
 
 export const signInWithGoogle = () => {

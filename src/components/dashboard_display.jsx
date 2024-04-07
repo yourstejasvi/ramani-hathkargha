@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { app, auth, storage, storageRef, db } from "../config/firebase.js";
+import { uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 // Define your different form components here
 const DashboardForm = () => {
@@ -17,7 +18,7 @@ const ProductDetailsForm = () => {
 
 const AddProducts = () => {
 
-  const categories = ['Sar-cotton', 'Sar-silk', 'Sar-linen', 'Kur-aline','Kur-casual', 'Kur-straight', 'Kur-angrakha', 'Kur-kaftaan', 'Kur-floor', 'Jew-necklace', 'Jew-earring', 'Jew-maangtika', 'Jew-noserings', 'Jew-bangles', 'Jew-rings', 'Jew-setpieces', 'Dec-wrought'];
+  const categories = ['cottonSar-', 'Sar-silk', 'Sar-linen', 'Kur-aline','Kur-casual', 'Kur-straight', 'Kur-angrakha', 'Kur-kaftaan', 'Kur-floor', 'Jew-necklace', 'Jew-earring', 'Jew-maangtika', 'Jew-noserings', 'Jew-bangles', 'Jew-rings', 'Jew-setpieces', 'Dec-wrought'];
 
   const [productName, setProductName] = useState('');
   const [productPrice, setProductPrice] = useState(0.0);
@@ -28,6 +29,7 @@ const AddProducts = () => {
   const [error, setError] = useState('');
 
   const types = ['image/jpg','image/jpeg']
+
 
   const fileHandler = (e) =>{
     let selectedFile = e.target.files[0];
@@ -43,41 +45,38 @@ const AddProducts = () => {
 
   const addProduct = (e) => {
     e.preventDefault();
-    // console.log(productName, productPrice, desc, stock, category, file)
-
-    const uploadTask = storage.ref(`product-images/${file.name}`).put(file);
-    uploadTask.on('state_changed', snapshot=>{
-      const progress = (snapshot.bytesTransferred/snapshot.totalBytes) * 100;
-      console.log(progress);
-    },err=>{
-      setError(err.message)
-    },()=>{
-      storage.ref('product-images').child(file.name).getDownloadURL().then(url => {
-        db.collection('Products').add({
-          productName: productName,
-          productPrice:Number(productPrice),
-          desc:desc,
-          stock:Number(stock),
-          category:category,
-          file: url
-
-
-        }).then(() => {
-          setProductName('');
-          setProductPrice(0);
-          setDesc('');
-          setStock(0);
-          setCategory(categories[0]);
-          setFile('');
-          setError('');
-          document.getElementById('file').value= '';
-
-
-        }).catch(err => setError(err.message));
-      })
-    })
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    uploadTask.on('state_changed',
+  (snapshot) => {
+    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    console.log('Upload is ' + progress + '% done');
+    switch (snapshot.state) {
+      case 'paused':
+        console.log('Upload is paused');
+        break;
+      case 'running':
+        console.log('Upload is running');
+        break;
+    }
+  },
+  (error) => {
+    switch (error.code) {
+      case 'storage/unauthorized':
+        break;
+      case 'storage/canceled':
+        break;
+      case 'storage/unknown':
+        break;
+    }
+  },
+  () => {
+    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+      console.log('File available at', downloadURL);
+    });
   }
-  
+);
+  }
+
   return (
     <>
     <div className='flex flex-col justify-center items-center'>
@@ -89,7 +88,7 @@ const AddProducts = () => {
 
                 <label htmlFor='productName' className='text-md'>Product Name</label>
                 <br/>
-                <input 
+                <input
                 type='text'
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
@@ -102,7 +101,7 @@ const AddProducts = () => {
 
                 <label htmlFor='productPrice'>Product Price</label>
                 <br/>
-                <input 
+                <input
                 type='number'
                 value={productPrice}
                 onChange={(e) => setProductPrice(e.target.value)}
@@ -123,7 +122,7 @@ const AddProducts = () => {
 
             </div>
 
-            
+
             <div className='flex flex-row justify-center mt-6'>
 
                   <label htmlFor='stock' className=''>Stock</label>
@@ -141,7 +140,7 @@ const AddProducts = () => {
 
                     <label htmlFor='category' className=''>Category</label>
                   <br/>
-                  <select 
+                  <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className='ml-7 rounded-md shadow-md bg-gray-200 p-2'
@@ -157,7 +156,7 @@ const AddProducts = () => {
 
 
             <div className='flex flex-row justify-center mt-6'>
-            
+
                   <br/>
                   <input type='file' className='ml-7 rounded-md shadow-md bg-gray-200 p-2' onChange={fileHandler} id='file' required/>
                   <br/>
@@ -172,7 +171,7 @@ const AddProducts = () => {
 
 
       </div>
-      
+
     </>
   );
 };
