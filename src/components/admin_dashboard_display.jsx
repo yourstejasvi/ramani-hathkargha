@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
-import { app, auth, storage, storageRef, db } from "../config/firebase.js";
+import { useFirebase } from '../config/firebase';
+import { uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 // Define your different form components here
 const DashboardForm = () => {
@@ -18,16 +19,22 @@ const ProductDetailsForm = () => {
 const AddProducts = () => {
 
   const categories = ['Sar-cotton', 'Sar-silk', 'Sar-linen', 'Kur-aline','Kur-casual', 'Kur-straight', 'Kur-angrakha', 'Kur-kaftaan', 'Kur-floor', 'Jew-necklace', 'Jew-earring', 'Jew-maangtika', 'Jew-noserings', 'Jew-bangles', 'Jew-rings', 'Jew-setpieces', 'Dec-wrought'];
+  const sizes = ['S','M','L','XL',"Free Size"];
+  
+
+  const firebase = useFirebase();
 
   const [productName, setProductName] = useState('');
   const [productPrice, setProductPrice] = useState(0.0);
   const [desc, setDesc] = useState('');
   const [stock, setStock] = useState(0);
+  const [size, setSize] = useState(sizes[0]);
   const [category, setCategory] = useState(categories[0]);
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
 
   const types = ['image/jpg','image/jpeg']
+
 
   const fileHandler = (e) =>{
     let selectedFile = e.target.files[0];
@@ -41,55 +48,31 @@ const AddProducts = () => {
     }
   };
 
-  const addProduct = (e) => {
-    e.preventDefault();
-    // console.log(productName, productPrice, desc, stock, category, file)
+   const handleSubmit = async (e) => {
+        e.preventDefault();
+        await firebase.addProducts(productName,productName,desc,stock,category,size,file);
+        setProductName("");
+        setProductPrice(0.0);
+        setDesc('');
+        setStock(0);
+        setSize(sizes[0]);
+        setCategory(categories[0]);
+        setFile(null);
+        alert("Product added!");
+   }
 
-    const uploadTask = storage.ref(`product-images/${file.name}`).put(file);
-    uploadTask.on('state_changed', snapshot=>{
-      const progress = (snapshot.bytesTransferred/snapshot.totalBytes) * 100;
-      console.log(progress);
-    },err=>{
-      setError(err.message)
-    },()=>{
-      storage.ref('product-images').child(file.name).getDownloadURL().then(url => {
-        db.collection('Products').add({
-          productName: productName,
-          productPrice:Number(productPrice),
-          desc:desc,
-          stock:Number(stock),
-          category:category,
-          file: url
-
-
-        }).then(() => {
-          setProductName('');
-          setProductPrice(0);
-          setDesc('');
-          setStock(0);
-          setCategory(categories[0]);
-          setFile('');
-          setError('');
-          document.getElementById('file').value= '';
-
-
-        }).catch(err => setError(err.message));
-      })
-    })
-  }
-  
   return (
     <>
     <div className='flex flex-col justify-center items-center'>
       <div className='mt-[10px] bg-white rounded-xl h-[580px] w-[600px] p-4'>
       <h1 className='flex justify-around text-2xl font-semibold tracking-widest text-[#8f1434]'>ADD PRODUCTS</h1>
       <hr/>
-      <form autoComplete='off' className='' onSubmit={(e) => addProduct(e, category)}>
+      <form autoComplete='off' className='' onSubmit={handleSubmit}>
             <div className='flex flex-row justify-center mt-6'>
 
                 <label htmlFor='productName' className='text-md'>Product Name</label>
                 <br/>
-                <input 
+                <input
                 type='text'
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
@@ -102,7 +85,7 @@ const AddProducts = () => {
 
                 <label htmlFor='productPrice'>Product Price</label>
                 <br/>
-                <input 
+                <input
                 type='number'
                 value={productPrice}
                 onChange={(e) => setProductPrice(e.target.value)}
@@ -114,7 +97,8 @@ const AddProducts = () => {
 
                 <label htmlFor='desc' className=''>Description</label>
                 <br/>
-                <input
+                <textarea
+                rows={5}
                 type='text'
                 value={desc}
                 onChange={(e) => setDesc(e.target.value)}
@@ -123,7 +107,7 @@ const AddProducts = () => {
 
             </div>
 
-            
+
             <div className='flex flex-row justify-center mt-6'>
 
                   <label htmlFor='stock' className=''>Stock</label>
@@ -141,7 +125,7 @@ const AddProducts = () => {
 
                     <label htmlFor='category' className=''>Category</label>
                   <br/>
-                  <select 
+                  <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className='ml-7 rounded-md shadow-md bg-gray-200 p-2'
@@ -155,9 +139,27 @@ const AddProducts = () => {
 
             </div>
 
+            <div className='flex flex-row justify-center mt-6'>
+
+                    <label htmlFor='category' className=''>Size</label>
+                  <br/>
+                  <select
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  className='ml-7 rounded-md shadow-md bg-gray-200 p-2'
+                  required>
+                    {sizes.map((size, index) => (
+                      <option key={index} value={size}>{size}</option>
+                    ))}
+                  </select>
+
+
+
+            </div>
+
 
             <div className='flex flex-row justify-center mt-6'>
-            
+
                   <br/>
                   <input type='file' className='ml-7 rounded-md shadow-md bg-gray-200 p-2' onChange={fileHandler} id='file' required/>
                   <br/>
@@ -172,7 +174,7 @@ const AddProducts = () => {
 
 
       </div>
-      
+
     </>
   );
 };

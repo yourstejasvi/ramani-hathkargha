@@ -18,6 +18,8 @@ const Navigation = ({ navigate }) => {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isWishlistOpen, setIsWishlistOpen] = useState(false);
     const [isBagOpen, setIsBagOpen] = useState(false);
+
+    const Navigate = useNavigate();
     
 
     const dropdownContainerRef = useRef(null);
@@ -166,14 +168,19 @@ const Navigation = ({ navigate }) => {
                     </div>                   
                 </div>
 
+            
+
                  )}
 
-        </div>
-        <div className='bg-gray-100 h-8 w-[400px] rounded-xl ml-[830px] -mt-[60px] border-1 hover:cursor-text'>
-            <SearchIcon style={{marginLeft:'10',marginTop:'2',color:'gray'}} />
-        </div>
+            <a className='text-md font-bold p-10 h-8 text-neutral-500 cursor-pointer border-b-4 border-transparent hover:border-amber-600'
+                 onClick={Navigate('/allProducts')}>ALL</a>
 
-        <div className='flex justify-end -mt-14 mr-12'>
+        </div>
+        
+        
+
+
+        <div className='flex justify-end -mt-[80px] mr-12'>
             <div className='flex flex-col p-4 h-[80px] cursor-pointer border-b-4 border-transparent hover:border-pink-800'
                  ref={dropdownContainerRef}
                  onClick={() => {setIsProfileOpen((prev) => !prev);}}>

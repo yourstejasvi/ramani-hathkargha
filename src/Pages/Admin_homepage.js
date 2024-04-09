@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import Logo from "../Assets/Ramani-logo.png"
 import AdminSidebar from "../components/admin_sidebar.jsx";
-import DashboardDisplay from "../components/dashboard_display.jsx";
+import DashboardDisplay from "../components/admin_dashboard_display.jsx";
 
 const Admin_homepage = () => {
     const [activeOption, setActiveOption] = useState(null);
@@ -16,7 +16,7 @@ const Admin_homepage = () => {
         
 
     </nav>
-    <DashboardDisplay slide={activeOption} />
+    <DashboardDisplay slide={activeOption} /> 
     <AdminSidebar setActiveOption={setActiveOption} />
     </div>
   )

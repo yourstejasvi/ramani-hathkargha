@@ -3,8 +3,8 @@ import React from 'react'
 const admin_sidebar = ( {setActiveOption} ) => {
 
   const options = [
-    "Dashboard", "Products", "Product Details", "Add Products", 
-    "Customers", "Orders", "Order details", "Artisans", "Grievances","Feedback","Manage Admins","Log-out"
+    "Dashboard", "View Products", "Product Details", "Add Products", 
+    "Customers", "Orders", "Order details", "Artisans", "View Grievances","View Feedback","Manage Admins","Log-out"
   ];
 
   return (

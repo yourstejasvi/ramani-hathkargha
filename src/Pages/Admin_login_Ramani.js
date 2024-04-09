@@ -2,9 +2,8 @@ import React from 'react'
 import Logo from "../Assets/Ramani-logo.png";
 import { useState } from 'react';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { app } from "../config/firebase";
 
-const auth = getAuth(app);
+
 
 const Admin_login_Ramani = () => {
 
@@ -13,7 +12,7 @@ const Admin_login_Ramani = () => {
 
     
     const LogInAdmin = () => {
-        signInWithEmailAndPassword(auth,email,password)
+        signInWithEmailAndPassword(email,password)
         .then((value) => console.log("Signin success"))
         .catch((err) => console.log(err));
     };
