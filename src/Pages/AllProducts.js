@@ -1,16 +1,8 @@
 import React, { useEffect , useState} from 'react';
 import { displayAllProducts } from '../config/firebase.jsx';
-import { TbFilterSearch } from "react-icons/tb";
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider';
-import { IoBagAddSharp } from "react-icons/io5";
-import { IoBagCheck } from "react-icons/io5";
-import { GoHeart } from "react-icons/go";
-import { GoHeartFill } from "react-icons/go";
+
 import Navigation from "../components/navigation.jsx";
+import Filter from "../components/filter.jsx";
 
 import Pic1 from "../Assets/weaving-work-banarasi-silk-traditional-saree-in-purple-276381.jpg";
 import Pic2 from "../Assets/woman-5829242_1280.jpg";
